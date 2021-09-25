@@ -132,7 +132,13 @@ def questao1_B():
     filhos[i] = mutacaoUniforme(filhos[i], limInferior, limSuperior)
 
   contador = 0
-  minimo = min(funcaoFitness(n, filhos))
+  fit = funcaoFitness(n, filhos)
+  minimo = fit[0]
+  posicoes = filhos[0]
+  for j in range(1,n):
+    if (minimo > fit[j]):
+      minimo = fit[j]
+      posicoes = filhos[j]
 
   while (contador < 10):
     selecionados = selecaoTorneio(n, filhos, populacao)
@@ -142,10 +148,19 @@ def questao1_B():
     for i in range(n):
       filhos[i] = mutacaoUniforme(filhos[i], limInferior, limSuperior)
 
-    if (min(funcaoFitness(n, filhos)) > (minimo - abs(minimo)*0.01)):
+    fit = funcaoFitness(n, filhos)
+    novoMinimo = fit[0]
+    novasPosicoes = filhos[0]
+    for j in range(1,n):
+      if (minimo > fit[j]):
+        novoMinimo = fit[j]
+        novasPosicoes = filhos[j]
+
+    if (novoMinimo > (minimo - abs(minimo)*0.01)):
       contador += 1
     else:
-      minimo = min(funcaoFitness(n, filhos))
+      minimo = novoMinimo
+      posicoes = novasPosicoes
       contador = 0
 
-  return minimo
+  return minimo, posicoes
