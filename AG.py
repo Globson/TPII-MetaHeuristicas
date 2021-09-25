@@ -87,10 +87,10 @@ def mutacaoUniforme(filho, limiteMin, limiteMax):
 #FUNÇÃO FINAL
 
 
-def questao1():
+def questao1_A():
   limInferior = [13, 0]
   limSuperior = [100, 100]
-  n = 1000  # quantidade
+  n = 10000  # quantidade
   t = 2  # tamanho do vetor
   filhos = [[0, 0] for i in range(n)]
   random.seed()
@@ -119,3 +119,33 @@ def questao1():
   return minimo
 
 
+def questao1_B():
+  limInferior = [13, 0]
+  limSuperior = [100, 100]
+  n = 100000  # quantidade
+  t = 2  # tamanho do vetor
+  filhos = [[0, 0] for i in range(n)]
+  random.seed()
+  populacao = gerarPopulacaoInicial(n, t, limInferior, limSuperior)
+  filhos = cruzamentoFlat(t, populacao)
+  for i in range(n):
+    filhos[i] = mutacaoUniforme(filhos[i], limInferior, limSuperior)
+
+  contador = 0
+  minimo = min(funcaoFitness(n, filhos))
+
+  while (contador < 10):
+    selecionados = selecaoTorneio(n, filhos, populacao)
+    populacao = deepcopy(filhos)
+    filhos = cruzamentoFlat(t, populacao)
+
+    for i in range(n):
+      filhos[i] = mutacaoUniforme(filhos[i], limInferior, limSuperior)
+
+    if (min(funcaoFitness(n, filhos)) > (minimo - abs(minimo)*0.01)):
+      contador += 1
+    else:
+      minimo = min(funcaoFitness(n, filhos))
+      contador = 0
+
+  return minimo
