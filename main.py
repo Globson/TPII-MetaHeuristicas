@@ -1,26 +1,43 @@
 '''
 Samuel Pedro Campos Sena - EF3494
-Trabalho prático 1 - CCF480 - MetaHeurísticas
+Saulo Miranda Silva - EF3475
+Trabalho prático 2 - CCF480 - MetaHeurísticas
 '''
 
-'''
-Referências utilizadas:
-https://machinelearningmastery.com/simple-genetic-algorithm-from-scratch-in-python/. Acesso em: 22 Set. 2021.
-'''
+
 import matplotlib.pyplot as plt
 from numpy.random import seed, rand, randn
 from numpy import sin, sqrt, asarray, mean, std
+from AG import *
 
+limInferior = [13, 0]
+limSuperior = [100, 100]
+pop = gerarPopulacaoInicial(100, 2, limInferior, limSuperior)
+for i in range(100):
+  print(pop[i])
 
-def objetivo1(v): #G6(x)
-    x1, x2 = v
-    return (pow((x1 - 10),3) + pow((x2-20),3))
+resultados = funcaoFitness(100, pop)
+for i in range(100):
+  print(resultados[i])
 
+teste = selecaoTorneio(100, pop, pop)
+for i in range(50):
+  print(teste[i])
 
-def objetivo2(v):
-    x, y = v
-    return (1)
+print(cruzamentoFlat(2, [[2, 3], [4, 1], [10, 9]]))
 
+teste = selecaoTorneio(100, pop, pop)
+for i in range(50):
+  print(teste[i])
+
+print(cruzamentoFlat(2, [[2, 3], [4, 1], [10, 9]]))
+
+muta = [[13, 5], [30, 28]]
+for j in range(2):
+  muta[j] = mutacaoUniforme(muta[j], limInferior, limSuperior)
+print(muta)
+
+print(questao1())
 
 #1
 Resultados1_AG_A = []
@@ -34,10 +51,6 @@ Resultados2_AG_B = []
 # adicionando seed de gerador rand
 seed()
 
-# definindo limites
-limites1 = asarray([[13., 100.], 
-                    [0., 100.]])
-#limites2 ??
 
 archive = open('Resultados.txt', 'w')
 archive.write("\nConfiguracoes:")
@@ -52,23 +65,8 @@ print("Tamanho do passo no HC: ",Tam_passoHC)
 print("Quantidade de reinicios no ILS: ", reinicios)
 print("Tamanho da pertubação no ILS: ", Tam_P)
 print("\nRealizando 30 iteracoes dos algoritmos...")'''
-'''for i in range(30):
-    _ , valor = ils(objetivo1, limites1a, iteracoes, Tam_passoHC, reinicios, Tam_P)
-    Resultados1_AG_B.append(valor)
-    _ , valor = melhor, valor = hc(objetivo1, limites1a, iteracoes, Tam_passoHC)   
-    Resultados1_AG_A.append(valor)
-    _ , valor = ils(objetivo1, limites1b, iteracoes, Tam_passoHC, reinicios, Tam_P)
-    Resultados2_AG_B.append(valor)
-    _ , valor = melhor, valor = hc(objetivo1, limites1b, iteracoes, Tam_passoHC)   
-    Resultados2_AG_A.append(valor)
-    _ , valor = ils(objetivo2, limites2c, iteracoes, Tam_passoHC, reinicios, Tam_P)
-    Resultados2C_ILS.append(valor)
-    _ , valor = melhor, valor = hc(objetivo2, limites2c, iteracoes, Tam_passoHC)   
-    Resultados2C_HC.append(valor)
-    _ , valor = ils(objetivo2, limites2d, iteracoes, Tam_passoHC, reinicios, Tam_P)
-    Resultados2D_ILS.append(valor)
-    _ , valor = melhor, valor = hc(objetivo2, limites2d, iteracoes, Tam_passoHC)   
-    Resultados2D_HC.append(valor)'''
+for i in range(30):
+   Resultados1_AG_A.append(questao1())
 
 archive.write("\n----------------------")
 archive.write("\nFuncao Objetivo 1 - AG  Config A:")
@@ -85,7 +83,7 @@ plt.boxplot(Resultados1_AG_A)
 plt.title("Resultado 1 AG_A")
 plt.savefig('plots/1_AG_A.png', format='png')
 #plt.show()
-
+'''
 archive.write("\n\nFuncao Objetivo 1 - AG  Config B:")
 archive.write("\nMin: " + str(min(Resultados1_AG_B)))
 archive.write("\nMax: " + str(max(Resultados1_AG_B)))
@@ -135,7 +133,7 @@ plt.clf()
 plt.boxplot(Resultados2_AG_B)
 plt.title("Resultado 2 AG_B")
 plt.savefig('plots/2_AG_B.png', format='png')
-#plt.show()
+#plt.show()'''
 archive.close()
 
 '''

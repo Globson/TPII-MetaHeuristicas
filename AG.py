@@ -1,65 +1,121 @@
-from pygad import *
-import numpy
-import matplotlib 
-
-#y = f(w1: w6) = w1x1 + w2x2 + w3x3 + w4x4 + w5x5 + 6wx6
-#where(x1, x2, x3, x4, x5, x6) = (4, -2, 3.5, 5, -11, -4.7) and y = 44
-
-#y = x²
-#where x1,x2 = (0,10) e y = 0
-
-function_inputs = [0,10]
-desired_output = 0
+import random
+import pandas as pd
+from copy import deepcopy
 
 
-def fitness_func(solution, solution_idx):
-    output = numpy.sum(solution*function_inputs)
-    fitness = 1.0 / numpy.abs(output - desired_output)
-    return fitness
+def G6(x1, x2):  # função  com penalidades
+  g1 = max(0, ((-(x1-5)**2) - ((x2-5)**2) + 100))
+  g2 = max(0, (((x1-6)**2) + ((x2-5)**2) - 82.81))
+  return (x1-10)**3 + (x2-20)**3 + 0.1*g1 + 0.1*g2
+
+def respeitaLimite(gene, limiteMin, limiteMax):
+  contador = 0
+  for i in range(len(gene)):
+    contador += 0 if (gene[i]<=limiteMax[i] and gene[i]>=limiteMin[i]) else 1
+  return contador == 0
 
 
-fitness_function = fitness_func
-
-num_generations = 50
-num_parents_mating = 4
-
-sol_per_pop = 8
-num_genes = len(function_inputs)
-
-init_range_low = -2
-init_range_high = 5
-
-parent_selection_type = "sss"
-keep_parents = 1
-
-crossover_type = "single_point"
-
-mutation_type = "random"
-mutation_percent_genes = 10
+def gerarPopulacaoInicial(quantidade, tamanho, limiteMin, limiteMax):
+  populacao = []
+  for i in range(0, quantidade):
+    novo = [0 for i in range(tamanho)]
+    for j in range(0, tamanho):
+      novo[j] = random.uniform(limiteMin[j], limiteMax[j])
+    populacao.append(novo)
+  return populacao
 
 
-ga_instance = pygad.GA(num_generations=num_generations,
-                       num_parents_mating=num_parents_mating,
-                       fitness_func=fitness_function,
-                       sol_per_pop=sol_per_pop,
-                       num_genes=num_genes,
-                       init_range_low=init_range_low,
-                       init_range_high=init_range_high,
-                       parent_selection_type=parent_selection_type,
-                       keep_parents=keep_parents,
-                       crossover_type=crossover_type,
-                       mutation_type=mutation_type,
-                       mutation_percent_genes=mutation_percent_genes)
+def funcaoFitness(quantidade, vetorEntrada):
+  fitness = []
+  for i in range(quantidade):
+    fitness.append(G6(vetorEntrada[i][0], vetorEntrada[i][1]))
+  return fitness
 
 
-ga_instance.run()
+def selecaoTorneio(quantidade, candidatos, pais):
+  selecionados = []
+  resultados = funcaoFitness(quantidade, candidatos)
+  resultadosPais = funcaoFitness(quantidade, pais)
+  for i in range(int(quantidade*0.7)):
+    indice = random.randint(0, quantidade-1)
+    candidato = resultados[indice]
+    for j in range(3):
+      novoIndice = random.randint(0, quantidade-1)
+      novoCandidato = resultados[novoIndice]
+      if (novoCandidato <= candidato):
+        candidato = novoCandidato
+        indice = novoIndice
+    selecionados.append([candidatos[indice]])
+
+  for i in range(int(quantidade*0.3)):
+    indice = random.randint(0, quantidade-1)
+    candidato = resultadosPais[indice]
+    for j in range(3):
+      novoIndice = random.randint(0, quantidade-1)
+      novoCandidato = resultadosPais[novoIndice]
+      if (novoCandidato <= candidato):
+        candidato = novoCandidato
+        indice = novoIndice
+    selecionados.append([candidatos[indice]])
+  return selecionados
+
+def cruzamentoFlat(tamanho, pais):
+  filho = [0,0]
+  n = len(pais)
+  geracao = []
+  for j in range(0, n):
+    filho = [0,0]
+    for i in range(tamanho):
+      filho[i] = (random.uniform(pais[random.randint(0,n-1)][i], pais[random.randint(0,n-1)][i]))
+    geracao.append(filho)
+  return geracao
+
+def mutacaoUniforme(filho, limiteMin, limiteMax):
+  sigma = 0.1
+  vk = [0 for i in range(len(filho))]
+  pm = 0.9
+  if (random.uniform(0, 1) > pm):
+    for i in range(len(filho)):
+      vk[i] = (sigma*(limiteMax[i]-limiteMin[i])*random.uniform(-1,1)) + filho[i]
+    while (respeitaLimite(vk, limiteMin, limiteMax) != True):
+      for j in range(len(filho)):
+        vk[j] = (sigma*(limiteMax[j]-limiteMin[j])*random.uniform(-1,1)) + filho[j]
+    return vk
+  else:
+    return filho
+
+#FUNÇÃO FINAL
 
 
-solution, solution_fitness, solution_idx = ga_instance.best_solution()
-print("Parameters of the best solution : {solution}".format(solution=solution))
-print("Fitness value of the best solution = {solution_fitness}".format(
-    solution_fitness=solution_fitness))
+def questao1():
+  limInferior = [13, 0]
+  limSuperior = [100, 100]
+  n = 1000  # quantidade
+  t = 2  # tamanho do vetor
+  filhos = [[0, 0] for i in range(n)]
+  random.seed()
+  populacao = gerarPopulacaoInicial(n, t, limInferior, limSuperior)
+  filhos = cruzamentoFlat(t, populacao)
+  for i in range(n):
+    filhos[i] = mutacaoUniforme(filhos[i], limInferior, limSuperior)
 
-prediction = numpy.sum(numpy.array(function_inputs)*solution)
-print("Predicted output based on the best solution : {prediction}".format(
-    prediction=prediction))
+  contador = 0
+  minimo = min(funcaoFitness(n, filhos))
+
+  while (contador < 5):
+    selecionados = selecaoTorneio(n, filhos, populacao)
+    populacao = deepcopy(filhos)
+    filhos = cruzamentoFlat(t, populacao)
+
+    for i in range(n):
+      filhos[i] = mutacaoUniforme(filhos[i], limInferior, limSuperior)
+
+    if (min(funcaoFitness(n, filhos)) > (minimo - abs(minimo)*0.01)):
+      contador += 1
+    else:
+      minimo = min(funcaoFitness(n, filhos))
+      contador = 0
+
+  return minimo
+
+
