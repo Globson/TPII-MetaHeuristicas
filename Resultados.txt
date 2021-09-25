@@ -12,14 +12,15 @@ Critério de parada:
 Realizando 30 iteracoes dos algoritmos...
 ----------------------
 Funcao Objetivo 1 - AG  Config A:
-Min: -7684.6953633393905
-Max: -3417.6007870662393
-Media: -5690.536931444128
-Std: 958.6469540495762
+Variaveis de decisao da melhor solução X: -7264.381392871512
+Min: -7264.381392871512 -> Variaveis de decisao: x1: 18.9094825936675 x2: 0.014613988530291167
+Max: -3626.226250731225
+Media: -5576.020344574108
+Std: 966.3944224752062
 
 Funcao Objetivo 1 - AG  Config B:
-Min: -7891.200057954811
-Max: -6036.064839728945
-Media: -6989.531964267737
-Std: 466.3298341645575
+Min: -7883.335812214104 -> Variaveis de decisao: x1: 13.932431718491294 x2: 0.04626334075524241
+Max: -6134.4647693017505
+Media: -6938.4929970579215
+Std: 425.67906188177034
 ----------------------
